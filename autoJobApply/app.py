@@ -51,7 +51,7 @@ print("🤖 Gemini Terminal Chat (type 'exit' to quit)\n")
 
 # Chat loop
 while True:
-    user_input = input("🧑 You: ")
+    user_input = input("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv\n🧑 You: ")
     if user_input.lower() in ["exit", "quit"]:
         break
     response = conversation.run(user_input)
