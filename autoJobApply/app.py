@@ -55,7 +55,7 @@ while True:
     if user_input.lower() in ["exit", "quit"]:
         break
     response = conversation.run(user_input)
-    print(f"🤖 AI: {response}")
+    print(f"\n\n	🤖 AI: {response}")
 
     # Save chat to file
     history.append({"user": user_input, "ai": response})
