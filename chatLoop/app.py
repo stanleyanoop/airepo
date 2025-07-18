@@ -7,6 +7,17 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationChain
 
+'''
+This script sets up a terminal-based chat application using Google's Gemini AI model.
+It allows users to have a conversation with the AI, saving the chat history to a file.
+
+Usage:
+1. Ensure you have a .env file with your GOOGLE_API_KEY.
+2. Start Python virutal environment by running the below command:
+    source lc-agent-env/bin/activate
+3. Run the script: python app.py
+4. Type your messages and interact with the AI.
+'''
 warnings.filterwarnings("ignore")
 # Function to load memory from file
 def load_memory():
