@@ -1,70 +1,58 @@
 import sys
 import os
+
 import json
 import warnings
 from dotenv import load_dotenv
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.memory import ConversationBufferMemory
-from langchain.chains import ConversationChain
-
+from applyUtil import JobApplyUtil
 warnings.filterwarnings("ignore")
-# Function to load memory from file
-def load_memory():
-    if os.path.exists(MEMORY_FILE):
-        with open(MEMORY_FILE, "r") as f:
-            return json.load(f)
-    return []
-
-# Function to save memory to file
-def save_memory(messages):
-    with open(MEMORY_FILE, "w") as f:
-        json.dump(messages, f)
-        
-TOKEN_PROMPT = sys.argv[1] if len(sys.argv) > 1 else None
 
 # Step 1: Load your .env file
 load_dotenv()
-google_api_key = os.getenv("GOOGLE_API_KEY")
-MEMORY_FILE = "chat_memory.json"
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+JSEARCH_API_KEY = os.getenv("x-rapidapi-key")
+JSEARCH_API_HOST = os.getenv("x-rapidapi-host") 
 
-# Initialize memory and load previous conversation
-history = load_memory()
-memory = ConversationBufferMemory()
-for message in history:
-    memory.chat_memory.add_user_message(message["user"])
-    memory.chat_memory.add_ai_message(message["ai"])
+if not GOOGLE_API_KEY or not JSEARCH_API_KEY:
+    print("Error: GOOGLE_API_KEY or x-rapidapi-key not set in .env file.")
+    raise ValueError("Missing API keys in .env file. The agent needs both google and rapid api keys to function properly.")
 
+job_apply_util = JobApplyUtil(file_path="cnfg/job_search_config.json")
+job_criteria = job_apply_util.load_job_criteria()
 
-# Step 2: Set up the model
-llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", google_api_key=google_api_key)
-# Initialize memory and load previous conversation
-history = load_memory()
-memory = ConversationBufferMemory()
-for message in history:
-    memory.chat_memory.add_user_message(message["user"])
-    memory.chat_memory.add_ai_message(message["ai"])
+for job in job_criteria:
+    if "jobTitle" not in job or "jobType" not in job:
+        print("Error: Job criteria is missing required fields.")
+        raise ValueError("Job criteria must contain 'jobTitle', 'jobType', and 'keyWords'.")
+    print("Loaded job criteria:" + job["jobTitle"]) 
+    headers = {
+        "x-rapidapi-key": JSEARCH_API_KEY, 
+        "x-rapidapi-host": JSEARCH_API_HOST
+    }
+    query = f"{job['jobTitle']} {' '.join(job['keyWords'])}"
+    params = {
+        "query": query,
+        "country": "us",
+        "date_posted": "3days",
+        "employment_types": job["jobType"],
+        "sort_by": "relevance",
+        "page": 1,
+        "num_pages": 1
+    }
 
-# Build chain
-conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
+    data = job_apply_util.search_jobs(headers=headers, params =params)
+    if "data" not in data or len(data["data"]) == 0:
+        print(f"Warning : No data found in the response for the params: {params}")
+        continue
+    
+    print(f"✅ Found {len(data['data'])} result(s):\n")
+    for idx, job_entry in enumerate(data["data"], 1):
+        print(f"🧩 Job #{idx}")
+        print(f"Title       : {job_entry.get('job_title')}")
+        print(f"Company     : {job_entry.get('employer_name')}")
+        print(f"Location    : {job_entry.get('job_city')}, {job_entry.get('job_country')}")
+        print(f"Job Type    : {job_entry.get('job_employment_type')}")
+        print(f"Apply Link  : {job_entry.get('job_apply_link')}")
+        print(f"Description :\n{job_entry.get('job_description')[:500]}...")  # Trimmed for readability
+        print("-" * 80)
 
-print("🤖 Gemini Terminal Chat (type 'exit' to quit)\n")
-
-# Chat loop
-while True:
-    user_input = input("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv\n🧑 You: ")
-    if user_input.lower() in ["exit", "quit"]:
-        break
-    response = conversation.run(user_input)
-    print(f"\n\n🤖 AI: {response}")
-
-    # Save chat to file
-    history.append({"user": user_input, "ai": response})
-    save_memory(history)
-
-print("👋 Session ended. Chat history saved.")
-# # Step 3: Run a simple prompt
-# if TOKEN_PROMPT:
-# 	response = llm.invoke(TOKEN_PROMPT)
-# else:
-# 	response = llm.invoke("What are three interesting facts about space?")
-# print(response.content)

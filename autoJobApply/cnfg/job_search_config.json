@@ -1,0 +1,22 @@
+[
+    {
+      "jobTitle": "Java Lead",
+      "jobType": "CONTRACTOR",
+      "keyWords": ["Java", "Spring Boot", "Angular"]
+    },
+    {
+      "jobTitle": "QA Automation Lead",
+      "jobType": "CONTRACTOR",
+      "keyWords": ["Java", "Cucumber", "Playwright"]
+    },
+    {
+      "jobTitle": "Project Manager",
+      "jobType": "CONTRACTOR",
+      "keyWords": ["Project Management", "Agile", "Scrum"]
+    },
+    {
+      "jobTitle": "Scrum Master",
+      "jobType": "CONTRACTOR",
+      "keyWords": ["Project Management", "Agile", "Scrum"]
+    }
+  ]
