@@ -1,22 +1,22 @@
 [
     {
-      "jobTitle": "Java Lead",
-      "jobType": "CONTRACTOR",
-      "keyWords": ["Java", "Spring Boot", "Angular"]
+      "job_title": "Java Lead",
+      "job_employment_type": "CONTRACTOR",
+      "job_keywords": ["Java", "Spring Boot", "Angular"]
     },
     {
-      "jobTitle": "QA Automation Lead",
-      "jobType": "CONTRACTOR",
-      "keyWords": ["Java", "Cucumber", "Playwright"]
+      "job_title": "QA Automation Lead",
+      "job_employment_type": "CONTRACTOR",
+      "job_keywords": ["Java", "Cucumber", "Playwright"]
     },
     {
-      "jobTitle": "Project Manager",
-      "jobType": "CONTRACTOR",
-      "keyWords": ["Project Management", "Agile", "Scrum"]
+      "job_title": "Project Manager",
+      "job_employment_type": "CONTRACTOR",
+      "job_keywords": ["Project Management", "Agile", "Scrum"]
     },
     {
-      "jobTitle": "Scrum Master",
-      "jobType": "CONTRACTOR",
-      "keyWords": ["Project Management", "Agile", "Scrum"]
+      "job_title": "Scrum Master",
+      "job_employment_type": "CONTRACTOR",
+      "job_keywords": ["Project Management", "Agile", "Scrum"]
     }
   ]

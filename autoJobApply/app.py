@@ -4,7 +4,7 @@ import os
 import json
 import warnings
 from dotenv import load_dotenv
-from applyUtil import JobApplyUtil
+from apply_util import JobApplyUtil
 warnings.filterwarnings("ignore")
 
 # Step 1: Load your .env file
@@ -21,20 +21,20 @@ job_apply_util = JobApplyUtil(file_path="cnfg/job_search_config.json")
 job_criteria = job_apply_util.load_job_criteria()
 
 for job in job_criteria:
-    if "jobTitle" not in job or "jobType" not in job:
+    if "job_title" not in job or "job_employment_type" not in job:
         print("Error: Job criteria is missing required fields.")
         raise ValueError("Job criteria must contain 'jobTitle', 'jobType', and 'keyWords'.")
-    print("Loaded job criteria:" + job["jobTitle"]) 
+    print("Loaded job criteria:" + job["job_title"]) 
     headers = {
         "x-rapidapi-key": JSEARCH_API_KEY, 
         "x-rapidapi-host": JSEARCH_API_HOST
     }
-    query = f"{job['jobTitle']} {' '.join(job['keyWords'])}"
+    query = f"{job['job_title']} {' '.join(job['job_keywords'])}"
     params = {
         "query": query,
         "country": "us",
         "date_posted": "3days",
-        "employment_types": job["jobType"],
+        "employment_types": job["job_employment_type"],
         "sort_by": "relevance",
         "page": 1,
         "num_pages": 1
@@ -48,11 +48,13 @@ for job in job_criteria:
     print(f"✅ Found {len(data['data'])} result(s):\n")
     for idx, job_entry in enumerate(data["data"], 1):
         print(f"🧩 Job #{idx}")
+        job_entry = job_apply_util.rate_job(job, job_entry)
         print(f"Title       : {job_entry.get('job_title')}")
         print(f"Company     : {job_entry.get('employer_name')}")
         print(f"Location    : {job_entry.get('job_city')}, {job_entry.get('job_country')}")
         print(f"Job Type    : {job_entry.get('job_employment_type')}")
         print(f"Apply Link  : {job_entry.get('job_apply_link')}")
-        print(f"Description :\n{job_entry.get('job_description')[:500]}...")  # Trimmed for readability
+        print(f"Rating      : {job_entry.get('rating', 'N/A')}")
+        # print(f"Description :\n{job_entry.get('job_description')[:500]}...")  # Trimmed for readability
         print("-" * 80)
 
