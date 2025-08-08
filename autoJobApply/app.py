@@ -10,15 +10,15 @@ warnings.filterwarnings("ignore")
 
 # Step 1: Load your .env file
 load_dotenv()
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-JSEARCH_API_KEY = os.getenv("x-rapidapi-key")
-JSEARCH_API_HOST = os.getenv("x-rapidapi-host") 
+GOOGLE_API_KEY : str = os.getenv("GOOGLE_API_KEY")
+JSEARCH_API_KEY : str = os.getenv("x-rapidapi-key")
+JSEARCH_API_HOST : str = os.getenv("x-rapidapi-host") 
 
 if not GOOGLE_API_KEY or not JSEARCH_API_KEY:
     print("Error: GOOGLE_API_KEY or x-rapidapi-key not set in .env file.")
     raise ValueError("Missing API keys in .env file. The agent needs both google and rapid api keys to function properly.")
 
-job_apply_util = JobApplyUtil(file_path="cnfg/job_search_config.json")
+job_apply_util : JobApplyUtil = JobApplyUtil(file_path="cnfg/job_search_config.json")
 job_criteria = job_apply_util.load_job_criteria()
 output_dir = "output"
 os.makedirs(output_dir, exist_ok=True)

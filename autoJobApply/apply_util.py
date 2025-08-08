@@ -23,9 +23,9 @@ class JobApplyUtil:
         except Exception as e:
             print(f"Error loading job criteria: {e}")
             return []
+    
     # check the endpoint params and headers for future tuning @ 
     # https://rapidapi.com/letscrape-6bRBa3QguO5/api/jsearch/playground/endpoint_73845d59-2a15-4a88-92c5-e9b1bc90956d
-    
     def search_jobs(self, headers, params):
         """
         This method searches for jobs based on the provided criteria.
