@@ -49,8 +49,8 @@ class JobApplyUtil:
         to get a rating score for the job.
             :param job_criteria: Criteria for the job search, including job title, type, and keywords.
             :param job_listing: Job listing to be rated, including job title, type, keywords, etc."""
-        time.sleep(5)
         print ("Delaying 5 seconds before rating the job...")
+        time.sleep(5)
         return job_search_agent.rate_job(job_criteria, job_listing)
         
 if __name__ == "__main__":
