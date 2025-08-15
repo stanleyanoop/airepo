@@ -3,6 +3,7 @@ import os
 
 import json
 import warnings
+from datetime import datetime
 from dotenv import load_dotenv
 from apply_util import JobApplyUtil
 warnings.filterwarnings("ignore")
@@ -19,6 +20,8 @@ if not GOOGLE_API_KEY or not JSEARCH_API_KEY:
 
 job_apply_util = JobApplyUtil(file_path="cnfg/job_search_config.json")
 job_criteria = job_apply_util.load_job_criteria()
+output_dir = "output"
+os.makedirs(output_dir, exist_ok=True)
 
 for job in job_criteria:
     if "job_title" not in job or "job_employment_type" not in job:
@@ -29,15 +32,19 @@ for job in job_criteria:
         "x-rapidapi-key": JSEARCH_API_KEY, 
         "x-rapidapi-host": JSEARCH_API_HOST
     }
+    weekday = datetime.today().weekday()
+    print(f"Today is {weekday} (0=Monday, 6=Sunday)")
+    date_posted = "3days" if weekday == 0 else "today"  # Default to 3 days, can be changed based on job criteria
     query = f"{job['job_title']} {' '.join(job['job_keywords'])}"
     params = {
         "query": query,
         "country": "us",
-        "date_posted": "3days",
+        "date_posted": date_posted,
         "employment_types": job["job_employment_type"],
         "sort_by": "relevance",
+        "exclude_job_publishers": "BeeBe",
         "page": 1,
-        "num_pages": 1
+        "num_pages": 2
     }
 
     data = job_apply_util.search_jobs(headers=headers, params =params)
@@ -46,15 +53,20 @@ for job in job_criteria:
         continue
     
     print(f"✅ Found {len(data['data'])} result(s):\n")
-    for idx, job_entry in enumerate(data["data"], 1):
-        print(f"🧩 Job #{idx}")
-        job_entry = job_apply_util.rate_job(job, job_entry)
-        print(f"Title       : {job_entry.get('job_title')}")
-        print(f"Company     : {job_entry.get('employer_name')}")
-        print(f"Location    : {job_entry.get('job_city')}, {job_entry.get('job_country')}")
-        print(f"Job Type    : {job_entry.get('job_employment_type')}")
-        print(f"Apply Link  : {job_entry.get('job_apply_link')}")
-        print(f"Rating      : {job_entry.get('rating', 'N/A')}")
-        # print(f"Description :\n{job_entry.get('job_description')[:500]}...")  # Trimmed for readability
-        print("-" * 80)
-
+    output_file = os.path.join(output_dir, f"output_{job['job_title'].replace(' ', '_')}.txt")  # Use os.path.join for cross-platform compatibility
+    with open(output_file, "w") as f:
+        for idx, job_entry in enumerate(data["data"], 1):
+            print(f"🧩 Job #{idx}")
+            job_entry = job_apply_util.rate_job(job, job_entry)
+            job_details = (
+                f"Title       : {job_entry.get('job_title')}\n"
+                f"Company     : {job_entry.get('employer_name')}\n"
+                f"Location    : {job_entry.get('job_city')}, {job_entry.get('job_country')}\n"
+                f"Job Type    : {job_entry.get('job_employment_type')}\n"
+                f"Apply Link  : {job_entry.get('job_apply_link')}\n"
+                f"Rating      : {job_entry.get('rating', 'N/A')}\n"
+                f"{'-' * 80}\n"
+            )
+            print(job_details)  # Print to console
+            f.write(job_details)
+    print(f"Results saved to {output_file}\n")
